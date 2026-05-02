@@ -1,0 +1,134 @@
+//Calculator.idl
+
+module CalculatorApp{
+    interface Calculator{
+        double add(in double a,in double b);
+        double sub(in double a,in double b);
+        double mul(in double a,in double b);
+        double div(in double a,in double b);
+    };
+};
+
+//CalculorImpl.java
+
+import CalculaorApp.CalculatorPOA;
+
+class CalculatorImp extends CalculaorPOA{
+    private ogr.orm.CORBA.ORB orb;
+    
+    public void setORB(org.omg.CORBA.ORB orb_val){
+        orb=orb_val;
+    }
+    
+    public double add(double a,doubl b){
+        return a+b;
+    }
+    
+    public double sub(double a,doubl b){
+        return a-b;
+    }
+    
+    public double mul(double a,doubl b){
+        return a*b;
+    }
+    
+    public double div(double a,doubl b){
+        return a/b;
+    }
+}
+
+
+//CalculaorServer.java
+
+import CalculaorApp.*;
+import org.omg.CosNaming.*;
+import org.omg.CORBA.*;
+import org.omg.PortableServer.*;
+import org.omg.PortableServer.POA;
+
+.
+public class CalculaorServer{
+    public static void main(String[] args){
+        try{
+            ORB orb=ORB.init(args,null);
+            
+            POA rootpoa=POAHelper.narrow(orb.resolve_initial_referance("RootPOA"));
+            rootpoa.the_POAManager().activate();
+            
+            
+            CalculatorImpl calcImpl=new CaculatorImpl();
+            calcImpl.setORB(orb);
+            
+            org.omg.CORBA.Object ref=rootpoa.servant_to_refernce(calcImpl);
+            Calculaor href=CalculaorHelper.narrow(ref);
+            
+            org.omg.CORBA.Object objRef=orb.resolve_initial_references("NameService");
+            Naming ContextExt ncRef=NainingContextExtHelper.narrow(objRef);
+            
+            String name="Calc";
+            NameComponent path[]=ncRef.to_name(name);
+            ncRef.rebind(path,href);
+            
+            System.out.println("Calculaor Server rady and waiting
+            orb.run();
+        }
+        catch(Exception e){
+            System.out.println("Server Error"+e);
+            e.printStackTrace(System.out);
+        }
+    }
+}
+
+
+//CalculaorClient.java
+
+import CalculatorApp.*;
+import org.omg.CosNaming.*;
+import org.omg.CosNaming.NamingContextPacakage.*;
+import org.omg.CORBA.*;
+import java.util.Scanner;
+
+public class CalculaorClient{
+    public static void main(String[] args){
+        try{
+            ORB orb=ORB.init(args,null);
+            
+            org.omg.CORBA.Object objRef=orb.resolve_initial_references("NameServerice");
+            NamingContextExt ncRef=NamingContextExtHelper.narrow(objRef);
+            
+            String name="Calc";
+            Calculaor calcImpl=CalculaorHelper.narrow(ncRef.resolve_str(name));
+            
+            Scanner sc=new Scanner(System.in);
+            System.out.println("Enter first number:");
+            double num1=sc.nextDouble();
+            System.out.println("Enter second number:");
+            double num2=sc.nextDouble();
+            
+            System.out.println("Addition: "+calcImpl.add(num1,num2));
+            System.out.println("Substraction: "+calcImpl.sub(num1,num2));
+            System.out.println("Multiplication: "+calcImpl.mul(num1,num2));
+            System.out.println("Division: "+calcImpl.div(num1,num2));
+            
+            
+            
+        }
+        catch(Exceptoion e){
+            System.out.println("Client Error"+e);
+            e.printStackTrace();
+        }
+    }
+}
+
+
+
+///Comands to run the program
+
+1.sudo apt-get remove openjdk*
+2.sudo apt update
+3.sudp apt install openjdk-8-jdk openjdk-8-jre
+4.idlj -fall Calculator.idl
+5.javac *.java CalculatorApp/*.java
+6.orbd - ORBInitialPort 1050
+7.java CalculaorServer - ORBInitialPort 1050 -ORBInitialHost localhost
+8.java CalculaorClient - ORBInitialPort 1050 -ORBInitialHost localhost
