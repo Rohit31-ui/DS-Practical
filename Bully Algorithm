@@ -1,0 +1,63 @@
+import java.util.*;
+
+public class DynamicBully{
+    static int totalNodes;
+    static boolean[] active;
+    public static void main(String[] args){
+        Scanner sc=new Scanner(System.in);
+        System.out.println("Enter total no of nodes:");
+        totalNodes=sc.nextInt();
+        
+        active=new boolean[totalNodes+1];
+        
+        for(int i=0;i<=toatlNodes;i++){
+            active[i]=true;
+        }
+        
+        System.out.println("Enter the node that fails (1 to" +totalNodes +" )");
+        int failed=sc.nextInt();
+        
+        active[failed]=false;
+        
+        System.out.println("Enter the node that detects the failure and starts election: ")
+        int starter = sc.nextInt();
+        System.out.println("\n---Election Process Started---");
+        startElection(starter);
+        
+        sc.close();
+        
+    }
+    
+    static void startElection(int starter){
+        boolean higherNodeResponded=false;
+        
+        for(int i=starter+1;i<=totalNodes;i++){
+            if(active[i]){
+                System.out.println("Node "+starter+" sends Election to Node "+i);
+                System.out.println("Node "+i+" responds OK to Node "+starter);
+                higherNodeResponded=true;
+                
+                startElection(i);
+                
+                return;
+            }
+            
+        }
+        
+        if(!higherNodeResponded){
+            System.out.println("\n**** Node "+starter+ " is the new Leader ***");
+            
+            for(int i=1;i<=totalNodes;i++){
+                if(active[i] && i!=starter){
+                    System.out.println("Node "+starter+" sends leader message to Node "+i);
+                }
+            }
+        }
+    }
+}
+
+
+///Commands to run
+
+javac DynamicBully.java
+java DynamicBully
