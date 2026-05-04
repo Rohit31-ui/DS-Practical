@@ -1,0 +1,69 @@
+//AddInterface.java
+import java.rmi.*;
+
+public interface AddInterface extends Remote{
+    public int add(int x,int y) throws RemoteException;
+}
+
+
+//AddImplementation.java
+
+import java.rmi.*;
+import java.rmi.server.*;
+
+public class AddImplementation extends UniCaseRemoteObject implements AddInterface{
+    public AddImplementation() throws RemoteException{
+        super();
+    }
+    @override
+    public int add(int x,int y){
+        return (x+y);
+    }
+    
+}
+
+//Server.java
+
+import java.rmi.*;
+import java.rmi.registry.*;
+
+public class Server{
+    public static void main(String[] args){
+        try{
+            AddInterface obj=new AddImplementation();
+            Naming.rebind("AddService",obj);
+            System.out.println("Server is ready");
+        }
+        catch(Exception e){
+            System.out.println("Server failed"+e);
+        }
+    }
+}
+
+
+//Client.java
+
+import java.rmi.*;
+
+public class Client{
+    public static void main(String[] args){
+        try{
+            AddInterface obj= (AddInterface) Naming.lookup("rmi://localhost/AddService");
+            int result=obj.add(10,20);
+            System.out.println("Addition result"+result);
+        }
+        catch(Exception e){
+            System.out.print("Client error"+e)
+        }
+    }
+}
+
+//Commands to run 
+1.javac *
+2.rmiregistry
+
+//open 2nd teriminal
+javac Server
+
+//open another terminal
+javac Client
